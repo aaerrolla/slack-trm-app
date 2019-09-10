@@ -1,6 +1,6 @@
 import os
 import requests  
-from flask import abort, Flask, json, request, make_response
+from flask import abort, Flask, json, jsonify, request, make_response
 
 app = Flask(__name__)
 
@@ -20,19 +20,18 @@ def open_trm():
     dialog = {
         "callback_id": "ryde-46e2b0",
         "title": "TRM Information",
-        "submit_label": "Request",
-        "notify_on_cancel": True,
-         "state": "Limo",        
+        "submit_label": "Send",
+        "notify_on_cancel": True,                 
         "elements": [
             {
                 "type": "text",
-                "label": "Field 1",
-                "name": "field1"
+                "label": "1. Incident Number",
+                "name": "in_number"
             },
             {
                 "type": "text",
-                "label": "Field 2",
-                "name": "field2"
+                "label": "2. On Call PDL",
+                "name": "oncall_pdl"
             }
         ]
     }
@@ -52,10 +51,14 @@ def open_trm():
 @app.route('/send-trm', methods=['POST'])
 def send_trm():
     api_url = 'https://slack.com/api/chat.postMessage'
-    
-  
-    api_data =  {"token": os.environ['SLACK_TOKEN'], "channel": "CMP7D1NMP", "as_user": "true", "reply_broadcast":"true",	 "text": "Hello" }
-    res = requests.post(api_url, data=api_data)
-    print(res.content)
+    payload = request.form.getlist('payload')
 
+    json_data = json.loads(payload[0])
+    fields = dict( json_data["submission"])
+    data = f"New TRM Submitted.  \n  INC Number   ->  {fields['in_number']} \n On Call PDL  ->  {fields['oncall_pdl']}" 
+		                
+    api_data =  {"token": os.environ['SLACK_TOKEN'], "channel": "CMP7D1NMP", "as_user": "true", "reply_broadcast":"true",	 "text": data }
+    
+    requests.post(api_url, data=api_data)
+    
     return make_response()

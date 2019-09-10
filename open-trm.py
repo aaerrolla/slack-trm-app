@@ -57,7 +57,7 @@ def send_trm():
     fields = dict( json_data["submission"])
     data = f"New TRM Submitted.  \n  INC Number   ->  {fields['in_number']} \n On Call PDL  ->  {fields['oncall_pdl']}" 
 		                
-    api_data =  {"token": os.environ['SLACK_TOKEN'], "channel": "CMP7D1NMP", "as_user": "true", "reply_broadcast":"true",	 "text": data }
+    api_data =  {"token": os.environ['SLACK_TOKEN'], "channel": os.environ['SLACK_CHANNEL'], "as_user": "true", "reply_broadcast":"true",	 "text": data }
     
     requests.post(api_url, data=api_data)
     

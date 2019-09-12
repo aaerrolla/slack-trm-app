@@ -37,7 +37,7 @@ def open_trm():
     }
 
     api_data = {
-        "token": os.environ['SLACK_TOKEN'],
+        "token": os.environ['SLACK_ACCESS_TOKEN'],
         "trigger_id": trigger_id,
         "dialog": json.dumps(dialog)
     }
@@ -52,13 +52,11 @@ def open_trm():
 def send_trm():
     api_url = 'https://slack.com/api/chat.postMessage'
     payload = request.form.getlist('payload')
-
+    print(payload)
     json_data = json.loads(payload[0])
     fields = dict( json_data["submission"])
     data = f"New TRM Submitted.  \n  INC Number   ->  {fields['in_number']} \n On Call PDL  ->  {fields['oncall_pdl']}" 
-		                
-    api_data =  {"token": os.environ['SLACK_TOKEN'], "channel": os.environ['SLACK_CHANNEL'], "as_user": "true", "reply_broadcast":"true",	 "text": data }
-    
+    api_data =  {"token": os.environ['SLACK_ACCESS_TOKEN'], "channel": os.environ['SLACK_CHANNEL'], "as_user": "true", "reply_broadcast":"true",	 "text": data }
     requests.post(api_url, data=api_data)
     
     return make_response()
